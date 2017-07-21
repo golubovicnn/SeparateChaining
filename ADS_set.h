@@ -1,18 +1,6 @@
 #ifndef ADS_SET_H
 #define ADS_SET_H
 
-// ADS_set.h Double Hashing
-// 
-// VU Algorithmen und Datenstrukturen - SS 2017 Universitaet Wien
-// Container - Projekt
-// https://cewebs.cs.univie.ac.at/ADS/ss17/
-//
-// Beispielimplementierung mit "Double Hashing - Linear Probing" 
-// Erstellt in der Lehrveranstaltung vom 4.4.2017, Konstruktoren und 
-// Zuweisungsoperatoren wurden vervollständigt.
-//
-// Nicht optimiert und eventuell fehlerhaft (Fehler bitte melden)
-
 #include <functional>
 #include <algorithm>
 #include <iostream>
