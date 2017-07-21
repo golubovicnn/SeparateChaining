@@ -156,7 +156,6 @@ public:
     return !!find_pos(key);
   }
   iterator find(const key_type& key) const {
-  	if(empty()) return end();
     if (element *pos {find_pos(key)}) return const_iterator{pos, this};
     return end();
   }
@@ -192,9 +191,9 @@ public:
 
   std::pair<iterator,bool> insert(const key_type& key) {
     if (element *pos {find_pos(key)})
-      return std::make_pair(const_iterator{pos,this}, false);
+      return std::make_pair(const_iterator{pos}, false);
     reserve(sz+1);
-    return std::make_pair(const_iterator{insert_unchecked(key),this}, true);
+    return std::make_pair(const_iterator{insert_unchecked(key)}, true);
   }
   
   template<typename InputIt> void insert(InputIt first, InputIt last) {
@@ -258,19 +257,21 @@ public:
   		}
   	}
   }
-  	return const_iterator{nullptr, this};
+  	return const_iterator{nullptr, this};  
   }
   
 
   const_iterator end() const { 
-  	 /*if(sz>0) {
-  		for(size_type i=max_sz; i>=0; i--){
-	  		if(table[i]!=nullptr) {
-	  			if(table[i]->next==nullptr)
+    /*
+  	 if(sz > 0) {
+  		for(size_type i = max_sz; i >= 0; i--){
+	  		if(table[i] != nullptr) {
+	  			if(table[i]->next == nullptr){
 	  				return const_iterator{table[i], this};
+	  			}
 	  			else{
-					element * help;
-	  				help=table[i];
+					  element * help;
+	  				help = table[i];
 	  				while(help->next != nullptr){
 	  					help=help->next;
 	  				}
@@ -279,9 +280,8 @@ public:
 	  		}
   		}
   	}
-  	else {*/
-  		return const_iterator{nullptr, this};
-  	//}
+    */
+  	return const_iterator{table[max_sz], this};
   }
 
   void dump(std::ostream& o = std::cerr) const {
@@ -303,6 +303,42 @@ public:
         o << '\n';
       }
     } 
+  }
+  
+  
+  //Adhoc 6.7.
+  const_iterator x(const key_type& k) const {
+    
+    key_type maximum;
+    bool maxGesetz = false;
+    
+    for(size_type i = 0; i < max_sz; i++){
+      element * current_ptr = table[i];
+      while (current_ptr != nullptr){
+        if(std::less<key_type>{}(current_ptr->key,k)){
+          if(maxGesetz) {
+            if(std::less<key_type>{}(maximum, current_ptr->key)){
+              maximum = current_ptr->key;
+              //current_ptr = current_ptr->next;
+            }
+            //else
+              //current_ptr = current_ptr->next;
+          }
+          else{
+            maximum = current_ptr->key;
+            maxGesetz = true;
+            //current_ptr = current_ptr->next;
+          } 
+        }
+        current_ptr = current_ptr->next;
+      }
+    }
+    if(maxGesetz){
+      return const_iterator(find_pos(maximum),this);
+    }
+    else{
+      return end();
+    }
   }
 
   friend bool operator==(const ADS_set& lhs, const ADS_set& rhs) {
@@ -327,7 +363,7 @@ public:
   using iterator_category = std::forward_iterator_tag;
 
   //explicit Iterator(element * pos = nullptr, const ADS_set<Key,N> * set ): pos{pos}, set{set} {}
-  //explicit Iterator(element * pos = nullptr): pos{pos} { if (pos) skip_free(); }
+  explicit Iterator(element * pos = nullptr): pos{pos} { if (pos) skip_free(); }
   
 
   Iterator(element * pos, const ADS_set<Key,N> * set): pos{pos}, set{set} {}
